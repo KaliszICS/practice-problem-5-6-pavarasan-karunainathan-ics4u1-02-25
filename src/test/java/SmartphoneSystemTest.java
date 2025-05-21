@@ -321,12 +321,108 @@ public class SmartphoneSystemTest {
 
     // Smartphone Class Tests
     @Test
-    public void testSmartphoneClassExists() {
+    public void testSmartphoneToStringMethod() {
         try {
             Class<?> smartphoneClass = Class.forName("Smartphone");
-            assertTrue(true);
+            Method toStringMethod = smartphoneClass.getDeclaredMethod("toString");
+            assertNotNull(toStringMethod, "Smartphone should have a toString method");
+            assertEquals(String.class, toStringMethod.getReturnType(), "toString() should return String");
         } catch (ClassNotFoundException e) {
             fail("Smartphone class does not exist");
+        } catch (NoSuchMethodException e) {
+            fail("Smartphone class is missing required method: toString()");
+        }
+    }
+    
+    // Integration Tests
+    
+    @Test
+    public void testSmartphoneCompositionWithBattery() {
+        try {
+            Class<?> smartphoneClass = Class.forName("Smartphone");
+            Class<?> batteryClass = Class.forName("Battery");
+            
+            // Check if Smartphone has a Battery field
+            Field batteryField = smartphoneClass.getDeclaredField("battery");
+            assertEquals(batteryClass, batteryField.getType(), "Smartphone should have a composition relationship with Battery");
+            
+            // Check if there's a method to get access to the battery
+            boolean hasAccessToBattery = false;
+            for (Method method : smartphoneClass.getDeclaredMethods()) {
+                if (method.getName().equals("chargeBattery") || 
+                    (method.getName().equals("upgradeComponent") && 
+                     method.getParameterCount() == 1 && 
+                     method.getParameterTypes()[0].equals(batteryClass))) {
+                    hasAccessToBattery = true;
+                    break;
+                }
+            }
+            
+            assertTrue(hasAccessToBattery, "Smartphone should have methods to access the Battery component");
+        } catch (ClassNotFoundException e) {
+            fail("One of the required classes does not exist: " + e.getMessage());
+        } catch (NoSuchFieldException e) {
+            fail("Smartphone class is missing the battery field for composition");
+        }
+    }
+    
+    @Test
+    public void testSmartphoneCompositionWithDisplay() {
+        try {
+            Class<?> smartphoneClass = Class.forName("Smartphone");
+            Class<?> displayClass = Class.forName("Display");
+            
+            // Check if Smartphone has a Display field
+            Field displayField = smartphoneClass.getDeclaredField("display");
+            assertEquals(displayClass, displayField.getType(), "Smartphone should have a composition relationship with Display");
+            
+            // Check if there's a method to get access to the display
+            boolean hasAccessToDisplay = false;
+            for (Method method : smartphoneClass.getDeclaredMethods()) {
+                if ((method.getName().equals("powerOn") || method.getName().equals("powerOff")) || 
+                    (method.getName().equals("upgradeComponent") && 
+                     method.getParameterCount() == 1 && 
+                     method.getParameterTypes()[0].equals(displayClass))) {
+                    hasAccessToDisplay = true;
+                    break;
+                }
+            }
+            
+            assertTrue(hasAccessToDisplay, "Smartphone should have methods to access the Display component");
+        } catch (ClassNotFoundException e) {
+            fail("One of the required classes does not exist: " + e.getMessage());
+        } catch (NoSuchFieldException e) {
+            fail("Smartphone class is missing the display field for composition");
+        }
+    }
+    
+    @Test
+    public void testSmartphoneCompositionWithProcessor() {
+        try {
+            Class<?> smartphoneClass = Class.forName("Smartphone");
+            Class<?> processorClass = Class.forName("Processor");
+            
+            // Check if Smartphone has a Processor field
+            Field processorField = smartphoneClass.getDeclaredField("processor");
+            assertEquals(processorClass, processorField.getType(), "Smartphone should have a composition relationship with Processor");
+            
+            // Check if there's a method to get access to the processor
+            boolean hasAccessToProcessor = false;
+            for (Method method : smartphoneClass.getDeclaredMethods()) {
+                if (method.getName().equals("runApp") || 
+                    (method.getName().equals("upgradeComponent") && 
+                     method.getParameterCount() == 1 && 
+                     method.getParameterTypes()[0].equals(processorClass))) {
+                    hasAccessToProcessor = true;
+                    break;
+                }
+            }
+            
+            assertTrue(hasAccessToProcessor, "Smartphone should have methods to access the Processor component");
+        } catch (ClassNotFoundException e) {
+            fail("One of the required classes does not exist: " + e.getMessage());
+        } catch (NoSuchFieldException e) {
+            fail("Smartphone class is missing the processor field for composition");
         }
     }
 
@@ -493,6 +589,4 @@ public class SmartphoneSystemTest {
             fail("Smartphone class is missing required method: upgradeComponent(Processor)");
         }
     }
-
-    @Test
-    public void testSmartph
+}
